@@ -1,0 +1,48 @@
+@dc:title "Davinci Interface Vocabulary"
+@dc:description "Interaction object types: Port, Interface, Item. Source: https://docs.davinci-app.com/pages/modeling/objects/{ports,interface,item}"
+vocabulary <http://davinci-app.com/schema/interface#> as interface {
+    extends <http://purl.org/dc/elements/1.1/> as dc
+    extends <http://www.w3.org/2001/XMLSchema#> as xsd
+    extends <http://davinci-app.com/schema/base#> as base
+
+    @dc:description "An interaction point on a system component (Part) that defines how it interfaces with its environment or other components, encapsulating what flows in and out."
+    concept Port < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable
+
+    @dc:description "Port direction: 'in' (flows into the component), 'out' (flows out), or 'inout' (bidirectional, the default)."
+    scalar PortKind [
+        oneOf "in", "out", "inout"
+    ] = xsd:string
+
+    @dc:description "The direction of this Port."
+    scalar property kind [
+        domain Port
+        range PortKind
+        functional
+    ]
+
+    @dc:description "Defines the connections and relationships between Ports, specifying how components interact and communicate: a logical contract for what information, energy, or materials flow between them. Distinct from Linkage, which models the physical implementation."
+    concept Interface < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable
+
+    @dc:description "Indicates that a Port participates in this Interface's connection (the docs' 'Connect' field; this is the specific, structural form of the generic 'Connect' base relationship type, which is not separately modeled). Topology - the ordering of ports into connection groups - is not modeled here."
+    relation connectsPort [
+        from Interface
+        to Port
+        reverse isConnectedByInterface
+    ]
+
+    // TODO: the "Standard Custom Relationships" (Data, Power, Mechanical,
+    // Optical, Chemical, Electromagnetic, Thermal, Fluid) are project-
+    // configurable presets layered on top of the generic Connect mechanism.
+    // The docs do not define fields that distinguish them from Connect, so
+    // they are not modeled as separate relation entities here.
+
+    @dc:description "An individual element or unit that flows through a system (data, physical material, energy, or information), commonly used to specify what is transferred between components through Ports and Interfaces."
+    concept Item < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable
+
+    @dc:description "Indicates that an Item is transferred through an Interface."
+    relation transfers [
+        from Interface
+        to Item
+        reverse isTransferredBy
+    ]
+}

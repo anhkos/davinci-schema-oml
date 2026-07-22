@@ -1,0 +1,142 @@
+@dc:title "Davinci Values Vocabulary"
+@dc:description "Value-bearing object types: Attribute, Constraint, Resource, Risk. Source: https://docs.davinci-app.com/pages/modeling/objects/{attributes,constraints,resource,risk} and https://docs.davinci-app.com/pages/modeling/common/{equations,units}"
+vocabulary <http://davinci-app.com/schema/values#> as values {
+    extends <http://purl.org/dc/elements/1.1/> as dc
+    extends <http://www.w3.org/2001/XMLSchema#> as xsd
+    extends <http://www.w3.org/2003/11/swrlb#> as swrlb
+    extends <http://davinci-app.com/schema/base#> as base
+
+    @dc:description "An element whose value is given by a Math.js equation string or a literal (e.g. attribute expressions, constraint predicates)."
+    aspect Expressible < base:Element
+
+    @dc:description "The equation or literal value expression. Object references use '@' notation and automatically resolve the referenced object's value and unit; evaluation semantics (Math.js) are out of scope for this vocabulary."
+    scalar property expression [
+        domain Expressible
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "An Expressible whose value additionally carries an engineering unit (Attribute, Resource)."
+    aspect Valued < Expressible
+
+    @dc:description "The unit of the value, e.g. 'kg', 'm/s'. Optional but recommended for engineering values to enable automatic unit conversion. The units doc enumerates fixed unit kinds (Length, Surface Area, Volume, Liquid Volume, Angles, Time, Frequency, Mass, Electric Current, Temperature, Amount of Substance, Luminous Intensity, Force, Energy, Power, Pressure, Electricity and Magnetism, Binary) but does not define a structured 'kind' field distinct from the unit string itself, so unit is kept as a free string rather than an isq/si quantity property."
+    scalar property ^unit [
+        domain Valued
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "Defines properties or characteristics of system elements: quantitative or qualitative aspects such as dimensions, weight, material properties, or performance metrics. Attaches to parent objects such as Parts."
+    concept Attribute < base:Element, base:Contained, base:Taggable, base:Referenceable, Valued
+
+    @dc:description "The value structure kind: Number and Boolean support scalar and 1D/2D/3D array values; String and Date are scalar-only. Array dimensionality itself is not modeled here."
+    scalar AttributeKind [
+        oneOf "Number", "Boolean", "String", "Date"
+    ] = xsd:string
+
+    @dc:description "The value kind of the Attribute."
+    scalar property kind [
+        domain Attribute
+        range AttributeKind
+        functional
+    ]
+
+    @dc:description "Indicates that an Attribute's expression references another Attribute's value, with automatic unit conversion when units differ."
+    relation entity ReferencesAttribute [
+        from Attribute
+        to Attribute
+        forward referencesAttribute
+        reverse isReferencedByAttribute
+    ] < base:Element
+
+    // TODO: Attributes may define explicit values for specific States or
+    // Actions within their host's state branches (equations.md's
+    // '[attribute-uuid].state([state-uuid])' syntax). This is an expression-
+    // syntax feature evaluated inside the expression string, not a separate
+    // structural relation, so it is not modeled here.
+
+    @dc:description "A mathematical or logical expression specifying a rule the system must adhere to (performance threshold, safety limit, physical law, or design boundary), evaluable as true or false. Commonly used within Requirements to define testable verification conditions."
+    concept Constraint < base:Element, base:Contained, base:Taggable, base:Referenceable, Expressible
+
+    @dc:description "A quantifiable attribute used to perform tasks or achieve system objectives (financial, material, equipment, personnel, or energy). Functions like an Attribute but its owned child Resources roll up automatically; the rollup arithmetic itself is evaluation-time behavior and is not modeled as a rule, only the ownership structure (base:contains) is represented."
+    concept Resource < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable, Valued
+
+    @dc:description "When true, this Resource's value sums with its children (consumable, e.g. budget); when false, it rolls up as the maximum of its children (non-consumable, e.g. reusable equipment)."
+    scalar property isConsumable [
+        domain Resource
+        range xsd:boolean
+        functional
+    ]
+
+    @dc:description "When true and this Resource's equation references a Task, excludes weekends from duration calculations (assumes a standard 40-hour work week)."
+    scalar property useEffectiveLaborHours [
+        domain Resource
+        range xsd:boolean
+        functional
+    ]
+
+    @dc:description "Indicates that one element uses a Resource (the 'Resource' base relationship type)."
+    relation entity UsesResource [
+        from base:Element
+        to Resource
+        forward usesResource
+        reverse isResourceUsedBy
+    ] < base:Element
+
+    @dc:description "A potential uncertain event or condition that, if it occurs, has a positive or negative effect on one or more project objectives."
+    concept Risk < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable
+
+    @dc:description "The likelihood that the risk event will occur, in the range 0 to 1."
+    scalar property probability [
+        domain Risk
+        range xsd:decimal
+        functional
+    ]
+
+    @dc:description "The magnitude of the effect if the risk occurs, i.e. the severity of consequences to project objectives."
+    scalar property impact [
+        domain Risk
+        range xsd:decimal
+        functional
+    ]
+
+    @dc:description "A measure of how easily the risk can be identified or detected before it materializes."
+    scalar property detectability [
+        domain Risk
+        range xsd:decimal
+        functional
+    ]
+
+    @dc:description "How a Risk aggregates its sub-Risks: OR (occurs if any sub-risk occurs, maximum values) or AND (occurs only if all sub-risks occur, combined probabilities)."
+    scalar RiskCombinator [
+        oneOf "OR", "AND"
+    ] = xsd:string
+
+    @dc:description "The aggregation logic for this Risk's sub-Risks."
+    scalar property combinator [
+        domain Risk
+        range RiskCombinator
+        functional
+    ]
+
+    @dc:description "Criticality, automatically calculated as probability x impact."
+    scalar property criticality [
+        domain Risk
+        range xsd:decimal
+        functional
+    ]
+
+    @dc:description "Derives a Risk's criticality as probability x impact, per the documented calculated field."
+    rule RiskCriticality [
+        Risk(r) & probability(r, p) & impact(r, i) & builtIn(swrlb:multiply, c, p, i)
+        -> criticality(r, c)
+    ]
+
+    @dc:description "Indicates that one element mitigates a Risk (the 'Mitigation' base relationship type). The docs describe the target generically as 'a risk, issue, or other problem'; Risk is used here as the documented, modeled target."
+    relation entity Mitigates [
+        from base:Element
+        to Risk
+        forward mitigates
+        reverse isMitigatedBy
+    ] < base:Element
+}

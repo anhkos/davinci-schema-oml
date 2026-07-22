@@ -1,0 +1,133 @@
+@dc:title "Davinci Base Vocabulary"
+@dc:description "Shared aspects, base fields, and cross-cutting relationships common to every Davinci object type. Source: https://docs.davinci-app.com/pages/modeling/objects/objects and https://docs.davinci-app.com/pages/modeling/common/relationships"
+vocabulary <http://davinci-app.com/schema/base#> as base {
+    extends <http://purl.org/dc/elements/1.1/> as dc
+    extends <http://www.w3.org/2001/XMLSchema#> as xsd
+
+    @dc:description "The root of the Davinci object type hierarchy. All Davinci objects contain the base fields name, shortname, and documentation, plus a lock status (not modeled: an editor-only UI affordance with no structural meaning)."
+    aspect Element
+
+    @dc:description "An element that can own child elements (an object's 'Elements' field). Per the docs, objects operate within a tree structure where each object has a parent and may own child objects."
+    aspect Container
+
+    @dc:description "An element that may be owned by a Container, i.e. has a parent in the ownership tree."
+    aspect Contained
+
+    @dc:description "An element that can be tagged for cross-project categorization independent of hierarchy (ownership, maturity, status, subsystem, priority, requirement compliance, etc.)."
+    aspect Taggable
+
+    @dc:description "An element that can cite one or more Reference objects, grounding it in source material."
+    aspect Referenceable
+
+    @dc:description "The name of the object."
+    scalar property name [
+        domain Element
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "An acronym, ID, or other short name for the object. Used when displaying the object as a reference in equations or other anchor elements in code."
+    scalar property shortname [
+        domain Element
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "The written summary, intent, or description of the object."
+    scalar property documentation [
+        domain Element
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "A tag: flexible, cross-project categorization independent of the ownership hierarchy. Managed through the Properties View and project settings."
+    concept Tag < Element
+
+    @dc:description "General relation indicating a Container owns a Contained element. The inverse is 'isContainedBy'."
+    relation entity Contains [
+        from Container
+        to Contained
+        forward contains
+        reverse isContainedBy
+        inverse functional
+    ] < Element
+
+    @dc:description "Assigns a Tag to a Taggable element."
+    relation hasTag [
+        from Taggable
+        to Tag
+        reverse tags
+    ]
+
+    // ===== Base relationship types (common/relationships.md) =====
+    // These are generic, element-to-element links available on every object's
+    // "Relationships" field. The docs describe each in generic "one element to
+    // another" terms without restricting source/target types, so from/to are
+    // kept at Element here. Relationship types with a more specific documented
+    // source or target (Reference, Connect, Performs, Subject, Mitigation,
+    // Resource, Verifies) are instead modeled in the vocabulary file where the
+    // more specific concept is defined; see structure.oml, values.oml,
+    // behavior.oml, and interface.oml.
+    //
+    // TODO: the "Transition" base relationship type overlaps in name with the
+    // full Transition object type (behavior.oml, which has Kind/Conditional/
+    // Probability fields). The docs do not clarify how the two relate, so only
+    // the richer Transition object type is modeled; the generic relationship
+    // type is not separately represented.
+
+    @dc:description "Indicates that one element makes use of another within the model."
+    relation entity Uses [
+        from Element
+        to Element
+        forward ^uses
+        reverse isUsedBy
+    ] < Element
+
+    @dc:description "Indicates that the object realizes some intent, design, or function of another object."
+    relation entity Realizes [
+        from Element
+        to Element
+        forward realizes
+        reverse isRealizedBy
+    ] < Element
+
+    @dc:description "Represents the impact that one element has on another."
+    relation entity Impacts [
+        from Element
+        to Element
+        forward impacts
+        reverse isImpactedBy
+    ] < Element
+
+    @dc:description "Indicates that one element depends on another."
+    relation entity DependsOn [
+        from Element
+        to Element
+        forward dependsOn
+        reverse isDependencyOf
+    ] < Element
+
+    @dc:description "Indicates the source or origin of the object or its intent."
+    relation entity HasSource [
+        from Element
+        to Element
+        forward hasSource
+        reverse isSourceOf
+    ] < Element
+
+    @dc:description "Indicates a result of one object occurring as a consequence of another."
+    relation entity ResultsIn [
+        from Element
+        to Element
+        forward resultsIn
+        reverse isResultOf
+    ] < Element
+
+    @dc:description "Indicates that the element is validated by another element. For the specific Test-verifies-Requirement relationship, see structure:Verifies."
+    relation entity Validates [
+        from Element
+        to Element
+        forward validates
+        reverse isValidatedBy
+    ] < Element
+}

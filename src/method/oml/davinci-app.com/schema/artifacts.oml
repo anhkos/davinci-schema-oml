@@ -1,0 +1,20 @@
+@dc:title "Davinci Artifacts Vocabulary"
+@dc:description "Documentation and reporting object types: Document, Table, Matrix, Slide. Source: https://docs.davinci-app.com/pages/modeling/objects/{documents,tables,matrix,slide}"
+vocabulary <http://davinci-app.com/schema/artifacts#> as artifacts {
+    extends <http://purl.org/dc/elements/1.1/> as dc
+    extends <http://davinci-app.com/schema/base#> as base
+
+    @dc:description "A spreadsheet interface for organizing, calculating, and analyzing data within the model, using an infinite grid of text, equation, and reference cells. Cell-level content (formulas, cell references, '@' object references) is a UI/expression-language concern and is not modeled structurally here."
+    concept Table < base:Element, base:Contained, base:Taggable, base:Referenceable
+
+    @dc:description "A professional word-processing environment for creating structured technical documentation, reports, and specifications, owning a collection of Table objects."
+    concept Document < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable [
+        restricts all base:contains to Table
+    ]
+
+    @dc:description "A grid-based, dynamically-queried view over model data (scope, depth, filters, and columns are configuration, not stored data); Matrices reference model objects but do not own them, so no base:contains restriction applies."
+    concept Matrix < base:Element, base:Contained, base:Taggable, base:Referenceable
+
+    @dc:description "A presentation environment combining slide software (text boxes, images, figures, tables, shapes, lines) with dynamic links to model objects and Reference-object images."
+    concept Slide < base:Element, base:Contained, base:Taggable, base:Referenceable
+}

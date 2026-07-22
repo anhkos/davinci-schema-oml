@@ -1,0 +1,38 @@
+@dc:title "Davinci Analysis Vocabulary"
+@dc:description "Executable-code object types: Code, Toolbox. Source: https://docs.davinci-app.com/pages/modeling/objects/{code,toolbox}"
+vocabulary <http://davinci-app.com/schema/analysis#> as analysis {
+    extends <http://purl.org/dc/elements/1.1/> as dc
+    extends <http://www.w3.org/2001/XMLSchema#> as xsd
+    extends <http://davinci-app.com/schema/base#> as base
+
+    @dc:description "An element that carries a Python (or other language) source code field, shared by Code and Toolbox."
+    aspect CodeBearing < base:Element
+
+    @dc:description "The source code content."
+    scalar property code [
+        domain CodeBearing
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "Executable code that integrates directly with the model. Python is the primary browser-executable language; C/C++, JavaScript, Java, and MATLAB are also supported with varying capabilities, and the docs note 'or others' so this is not a closed set."
+    concept Code < base:Element, base:Contained, base:Taggable, base:Referenceable, CodeBearing
+
+    @dc:description "The programming language of this Code object (commonly Python, C/C++, JavaScript, Java, or MATLAB, per the docs; kept as an open string since the docs allow others)."
+    scalar property ^language [
+        domain Code
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "Indicates that one Code object imports another (e.g. Python 'import @ModuleName' / 'from module_name import function')."
+    relation entity Imports [
+        from Code
+        to Code
+        forward imports
+        reverse isImportedBy
+    ] < base:Element
+
+    @dc:description "Extends the Davinci Agent's capabilities with custom Python functions ('davinci.tool()'-decorated) that connect to external APIs, perform specialized operations, or retrieve real-time data, and can write back to the model via the same update mechanism as Code objects."
+    concept Toolbox < base:Element, base:Contained, base:Taggable, base:Referenceable, CodeBearing
+}

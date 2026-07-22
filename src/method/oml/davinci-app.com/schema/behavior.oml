@@ -1,0 +1,164 @@
+@dc:title "Davinci Behavior Vocabulary"
+@dc:description "Behavioral object types: Action, State, Transition, Task. Source: https://docs.davinci-app.com/pages/modeling/objects/{actions,states,transitions,task}"
+vocabulary <http://davinci-app.com/schema/behavior#> as behavior {
+    extends <http://purl.org/dc/elements/1.1/> as dc
+    extends <http://www.w3.org/2001/XMLSchema#> as xsd
+    extends <http://davinci-app.com/schema/base#> as base
+
+    @dc:description "Describes system behavior using a Python-based subset of SysML v2 textual syntax: a Sequence of code defining flow, with Attributes bound at runtime and owned Constraints."
+    concept Action < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable
+
+    @dc:description "Code that defines the Action's behavior and flow, using Python-based syntax."
+    scalar property sequence [
+        domain Action
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "Actions compose hierarchically by calling nested sub-actions."
+    relation entity Calls [
+        from Action
+        to Action
+        forward calls
+        reverse isCalledBy
+    ] < base:Element
+
+    @dc:description "A distinct mode or configuration that a system or component can occupy during its lifecycle. States are connected by Transitions and reference Actions for entry, do, and exit behavior."
+    concept State < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable
+
+    @dc:description "How frequently the do Action executes while the system remains in this State."
+    scalar property interval [
+        domain State
+        range xsd:decimal
+        functional
+    ]
+
+    @dc:description "The Action executed once upon entering this State."
+    relation entity HasEntryAction [
+        from State
+        to Action
+        forward hasEntryAction
+        reverse isEntryActionOf
+    ] < base:Element
+
+    @dc:description "The Action executed repeatedly at 'interval' while this State remains active."
+    relation entity HasDoAction [
+        from State
+        to Action
+        forward hasDoAction
+        reverse isDoActionOf
+    ] < base:Element
+
+    @dc:description "The Action executed once when leaving this State."
+    relation entity HasExitAction [
+        from State
+        to Action
+        forward hasExitAction
+        reverse isExitActionOf
+    ] < base:Element
+
+    @dc:description "The path and condition that causes a system to move from one State to one or more target States (multiple targets trigger simultaneously)."
+    relation entity Transition [
+        from State
+        to State
+        forward transitionsTo
+        reverse transitionsFrom
+    ] < base:Element
+
+    @dc:description "The starting point when the state machine begins execution; has no incoming Transitions."
+    concept Initial < State [
+        restricts transitionsFrom to max 0
+    ]
+
+    @dc:description "A terminal state that ends state machine execution; has no outgoing Transitions."
+    concept Final < State [
+        restricts transitionsTo to max 0
+    ]
+
+    @dc:description "A boolean expression determining whether the Transition activates, using '@' notation to reference Attributes (e.g. '@temperature > 100')."
+    scalar property conditional [
+        domain Transition
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "Transition kind: 'default' deactivates the source State and activates the targets; 'trigger' activates targets while leaving the source active; 'failure' is like trigger but marks an error condition."
+    scalar TransitionKind [
+        oneOf "default", "trigger", "failure"
+    ] = xsd:string
+
+    @dc:description "The kind of this Transition."
+    scalar property kind [
+        domain Transition
+        range TransitionKind
+        functional
+    ]
+
+    @dc:description "A 0.0-1.0 value for stochastic target selection when multiple Transitions compete."
+    scalar property probability [
+        domain Transition
+        range xsd:decimal
+        functional
+    ]
+
+    @dc:description "A discrete unit of work or activity performed to achieve a specific objective, scheduled with start/end dates and duration, and owning sub-Tasks."
+    concept Task < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable
+
+    @dc:description "The Task's start date, as a date string, or calculated from prerequisites and the project timeline."
+    scalar property startDate [
+        domain Task
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "The Task's end date, derived from startDate and duration, or specified directly."
+    scalar property endDate [
+        domain Task
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "The numeric duration value, interpreted using durationUnit."
+    scalar property duration [
+        domain Task
+        range xsd:decimal
+        functional
+    ]
+
+    @dc:description "The unit for 'duration' (default 'Days' per the docs). The full set of supported duration units is not enumerated in the docs, so this is left as an open string rather than a closed oneOf."
+    scalar property durationUnit [
+        domain Task
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "Indicates that one Task must complete before another can proceed, with a delay of 'offset' 'offsetUnit' after completion."
+    relation entity Prerequisite [
+        from Task
+        to Task
+        forward hasPrerequisite
+        reverse isPrerequisiteFor
+    ] < base:Element
+
+    @dc:description "The time delay after the prerequisite Task completes, before the dependent Task may proceed."
+    scalar property offset [
+        domain Prerequisite
+        range xsd:decimal
+        functional
+    ]
+
+    @dc:description "The unit for 'offset'."
+    scalar property offsetUnit [
+        domain Prerequisite
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "Indicates that a part or entity is responsible for performing a specific Action (the 'Performs' base relationship type). The docs name Part and Entity as example sources without a common named supertype, so the source is kept at base:Element."
+    relation entity Performs [
+        from base:Element
+        to Action
+        forward performs
+        reverse isPerformedBy
+    ] < base:Element
+}

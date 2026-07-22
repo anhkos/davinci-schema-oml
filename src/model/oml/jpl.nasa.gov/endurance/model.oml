@@ -1,0 +1,524 @@
+description <http://jpl.nasa.gov/endurance/model#> as endurance {
+    uses <http://davinci-app.com/schema/base#> as base
+    uses <http://davinci-app.com/schema/structure#> as structure
+    uses <http://davinci-app.com/schema/values#> as values
+    uses <http://davinci-app.com/schema/interface#> as interface
+    uses <http://davinci-app.com/schema/behavior#> as behavior
+    uses <http://davinci-app.com/schema/reference#> as reference
+
+    instance EnduranceMission : structure:Package [
+        base:name "Endurance Mission Concept"
+        base:shortname "ENDURANCE"
+        base:documentation "Mission concept for a long-range rover (Endurance-R or Endurance-A variant) to traverse the lunar South Pole-Aitken basin, collecting, caching, and returning 12 samples to Earth. JPL Mission Concept Study Report for the 2023-2032 Planetary Science and Astrobiology Decadal Survey."
+        reference:references EnduranceReportRef
+    ]
+
+    instance LunarPathfinderRelay : structure:ExternalEntity [
+        base:name "Lunar Communications Pathfinder Relay"
+        base:shortname "PATHFINDER"
+        base:documentation "Commercial lunar relay satellite network operated by Surrey Satellite Technology Limited (SSTL), with ties to ESA, providing the far-side communications relay Endurance depends on for all uplink/downlink."
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance EnduranceRover : structure:Part [
+        base:name "Endurance Rover"
+        base:shortname "ROVER"
+        base:documentation "Long-range lunar rover, evolved from the Intrepid mission concept, capable of traversing nearly 2,000 km of lunar terrain in under four years. Launch mass (MEV) 487.6 kg."
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance EarthReturnVehicle : structure:Part [
+        base:name "Earth Return Vehicle"
+        base:shortname "ERV"
+        base:documentation "Robotic Earth Return Vehicle for the Endurance-R variant, delivered by a separate CLPS lander, that receives the rover's sample cache and returns it to Earth in an OSIRIS-REx-type sample return capsule."
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance RoverMobility : structure:Part [
+        base:name "Mobility Subsystem"
+        base:shortname "MOBILITY"
+        base:documentation "Four-wheel-drive, all-wheel-steered mobility system with a passive dual-sided rocker suspension and 0.8 m compliant mesh wheels, sized to keep slope angles under 15 deg."
+        base:isContainedBy EnduranceRover
+    ]
+
+    instance RoverManipulationSampling : structure:Part [
+        base:name "Manipulation and Sampling Subsystem"
+        base:shortname "ARM"
+        base:documentation "5-degree-of-freedom robotic arm with a turret end effector hosting the sampling scoop, HLI, and APXS, plus a 12-chamber sample canister for caching collected regolith and rocklets."
+        base:isContainedBy EnduranceRover
+    ]
+
+    instance RoverAutonomy : structure:Part [
+        base:name "Guidance, Navigation, and Autonomy Subsystem"
+        base:shortname "GNC"
+        base:documentation "Stereo camera pairs (front and rear), IMU, sun sensor, and onboard autonomy software for surface navigation, pose estimation, global localization, and instrument placement during day and night driving."
+        base:isContainedBy EnduranceRover
+    ]
+
+    instance RoverCDH : structure:Part [
+        base:name "Command and Data Handling Subsystem"
+        base:shortname "CDH"
+        base:documentation "Redundant GR740 quad-core LEON4 compute element with Virtex 5 navigation boards, and GR712 dual-core LEON3 instrument interface units; runs Psyche/Mars 2020-derived flight software."
+        base:isContainedBy EnduranceRover
+    ]
+
+    instance RoverTelecom : structure:Part [
+        base:name "Telecommunications Subsystem"
+        base:shortname "TCOM"
+        base:documentation "Redundant UST-Lite S-band radios with a 0.75 m steerable high-gain antenna (22.5 dBi) for the relay link, plus a low-gain antenna for emergencies, using the Proximity-1 protocol."
+        base:isContainedBy EnduranceRover
+        base:dependsOn LunarPathfinderRelay
+    ]
+
+    instance RoverPower : structure:Part [
+        base:name "Power Subsystem"
+        base:shortname "PWR"
+        base:documentation "Mod-1 Next Generation RTG (245 W BOL) with Li-ion battery and three power control modules for RTG power control and load/pyro distribution."
+        base:isContainedBy EnduranceRover
+    ]
+
+    instance RoverThermal : structure:Part [
+        base:name "Thermal Subsystem"
+        base:shortname "THERM"
+        base:documentation "Warm Electronics Box design with a zenith-facing radiator, constant-conductance heat pipes, passive thermal switches, and MLI insulation to survive lunar day/night extremes."
+        base:isContainedBy EnduranceRover
+        values:mitigates ThermalPerformanceRisk
+    ]
+
+    instance RoverStructures : structure:Part [
+        base:name "Structures Subsystem"
+        base:shortname "STRUCT"
+        base:documentation "Lightweight honeycomb chassis of carbon fiber composite struts, aluminum brackets, and aluminum honeycomb panels, providing mechanical attachment for all subsystems and the lander interface."
+        base:isContainedBy EnduranceRover
+        values:mitigates LunarDustRisk
+    ]
+
+    instance ERVPayload : structure:Part [
+        base:name "ERV Payload"
+        base:shortname "ERV-PAY"
+        base:documentation "Sample Return Capsule (SRC), based on the OSIRIS-REx design, plus two cameras for verifying sample canister placement and SRC separation."
+        base:isContainedBy EarthReturnVehicle
+    ]
+
+    instance ERVCDH : structure:Part [
+        base:name "ERV Command and Data Handling"
+        base:shortname "ERV-CDH"
+        base:documentation "Dual-string system of two JPL-developed Sphinx computers with GNC interface cards and motor controllers for the sample transfer link, SRC lid, and SRC spin-up device."
+        base:isContainedBy EarthReturnVehicle
+    ]
+
+    instance ERVTelecom : structure:Part [
+        base:name "ERV Telecommunications"
+        base:shortname "ERV-TCOM"
+        base:documentation "Dual-string S-band radio (two UST-Lite transponders, two 5-W SSPAs) with an omnidirectional antenna, used for the relay link during ascent and the DSN direct-to-Earth link during cruise."
+        base:isContainedBy EarthReturnVehicle
+    ]
+
+    instance ERVPower : structure:Part [
+        base:name "ERV Power"
+        base:shortname "ERV-PWR"
+        base:documentation "Fixed solar array (1.55 sq m) producing 424 W at end of mission, supplemented by up to 150 W from the delivery lander during pre-ascent activities."
+        base:isContainedBy EarthReturnVehicle
+    ]
+
+    instance RoverTotalMass : values:Attribute [
+        base:name "Rover Total Mass"
+        base:documentation "Maximum expected value (MEV) launch mass, including contingency (Table 3-2)."
+        values:expression "487.6"
+        values:unit "kg"
+        values:kind "Number"
+        base:isContainedBy EnduranceRover
+    ]
+
+    instance RoverMobilityMass : values:Attribute [
+        base:name "Mass"
+        values:expression "135.3"
+        values:unit "kg"
+        values:kind "Number"
+        base:isContainedBy RoverMobility
+    ]
+
+    instance RoverAutonomyMass : values:Attribute [
+        base:name "Mass"
+        values:expression "9.3"
+        values:unit "kg"
+        values:kind "Number"
+        base:isContainedBy RoverAutonomy
+    ]
+
+    instance RoverCDHMass : values:Attribute [
+        base:name "Mass"
+        values:expression "15.5"
+        values:unit "kg"
+        values:kind "Number"
+        base:isContainedBy RoverCDH
+    ]
+
+    instance RoverTelecomMass : values:Attribute [
+        base:name "Mass"
+        values:expression "24.8"
+        values:unit "kg"
+        values:kind "Number"
+        base:isContainedBy RoverTelecom
+    ]
+
+    instance RoverPowerMass : values:Attribute [
+        base:name "Mass"
+        values:expression "85.3"
+        values:unit "kg"
+        values:kind "Number"
+        base:isContainedBy RoverPower
+    ]
+
+    instance RoverThermalMass : values:Attribute [
+        base:name "Mass"
+        values:expression "16.6"
+        values:unit "kg"
+        values:kind "Number"
+        base:isContainedBy RoverThermal
+    ]
+
+    instance RoverStructuresMass : values:Attribute [
+        base:name "Mass"
+        values:expression "151.9"
+        values:unit "kg"
+        values:kind "Number"
+        base:isContainedBy RoverStructures
+    ]
+
+    instance DesignLife : values:Attribute [
+        base:name "Design Life"
+        values:expression "48"
+        values:unit "months"
+        values:kind "Number"
+        base:isContainedBy EnduranceRover
+    ]
+
+    instance MaxRoverSpeed : values:Attribute [
+        base:name "Max Rover Speed"
+        values:expression "1.0"
+        values:unit "km/hr"
+        values:kind "Number"
+        base:isContainedBy RoverMobility
+    ]
+
+    instance SlopeCapability : values:Attribute [
+        base:name "Slope Capability"
+        values:expression "20"
+        values:unit "deg"
+        values:kind "Number"
+        base:isContainedBy RoverMobility
+    ]
+
+    instance DegreesOfFreedom : values:Attribute [
+        base:name "Degrees of Freedom"
+        base:documentation "Total across mobility, arm, pointing, and sampling mechanisms."
+        values:expression "24"
+        values:kind "Number"
+        base:isContainedBy EnduranceRover
+    ]
+
+    instance BatteryCapacity : values:Attribute [
+        base:name "Battery Storage Capacity"
+        values:expression "20"
+        values:unit "amp-hr"
+        values:kind "Number"
+        base:isContainedBy RoverPower
+    ]
+
+    instance RTGBOLPower : values:Attribute [
+        base:name "RTG Beginning-of-Life Power"
+        base:documentation "Mod-1 Next Gen RTG. End-of-mission output is 213 W."
+        values:expression "245"
+        values:unit "W"
+        values:kind "Number"
+        base:isContainedBy RoverPower
+    ]
+
+    instance AveragePowerConsumption : values:Attribute [
+        base:name "Average Power Consumption"
+        base:documentation "Day driving mode MEV power (Table 3-3)."
+        values:expression "249"
+        values:unit "W"
+        values:kind "Number"
+        base:isContainedBy RoverPower
+    ]
+
+    instance ERVSolarArrayArea : values:Attribute [
+        base:name "Solar Array Area"
+        values:expression "1.55"
+        values:unit "sq m"
+        values:kind "Number"
+        base:isContainedBy ERVPower
+    ]
+
+    instance ERVSolarArrayPower : values:Attribute [
+        base:name "Solar Array Power"
+        base:documentation "End-of-mission output."
+        values:expression "424"
+        values:unit "W"
+        values:kind "Number"
+        base:isContainedBy ERVPower
+    ]
+
+    instance RoverRelayPort : interface:Port [
+        base:name "Relay Antenna Port"
+        base:documentation "0.75 m steerable high-gain S-band antenna port supporting the 2 Mbps Pathfinder relay link."
+        interface:kind "inout"
+        base:isContainedBy RoverTelecom
+    ]
+
+    instance SampleCachePort : interface:Port [
+        base:name "Sample Cache Transfer Port"
+        base:documentation "Output for the filled sample canister, gripped by the arm's end effector and separated by a wire-cutter for transfer to the ERV."
+        interface:kind "out"
+        base:isContainedBy RoverManipulationSampling
+    ]
+
+    instance ERVRelayPort : interface:Port [
+        base:name "Relay / DTE Antenna Port"
+        base:documentation "Omnidirectional S-band antenna port; relay link through ascent, DSN direct-to-Earth link during cruise."
+        interface:kind "inout"
+        base:isContainedBy ERVTelecom
+    ]
+
+    instance SRCReceivePort : interface:Port [
+        base:name "SRC Receive Port"
+        base:documentation "Receives the sample canister from the rover's transfer link into the Sample Return Capsule."
+        interface:kind "in"
+        base:isContainedBy ERVPayload
+    ]
+
+    instance SampleTransferInterface : interface:Interface [
+        base:name "Sample Cache Transfer Interface"
+        base:documentation "Single degree-of-freedom transfer link, integral with the ERV lander interface, that swings the filled sample canister from the rover arm's gripper into the SRC."
+        interface:connectsPort SampleCachePort, SRCReceivePort
+        base:isContainedBy EnduranceMission
+        interface:transfers SampleCanister
+    ]
+
+    instance SampleCanister : interface:Item [
+        base:name "Sample Canister"
+        base:documentation "12-chamber hollow circular disk canister, rotated about a horizontal axis to index empty chambers and close/secure each lid after a sample transfer."
+        base:isContainedBy RoverManipulationSampling
+    ]
+
+    instance LanderCapabilityRequirement : structure:Requirement [
+        base:name "Lander Capability Requirement"
+        base:documentation "The CLPS lander capability shall be at least 570 kg, to carry the rover launch mass (487.6 kg MEV) with 30% margin."
+        structure:hasSubject EnduranceRover
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance MaxWheelSpeedRequirement : structure:Requirement [
+        base:name "Max Wheel Speed Requirement"
+        base:documentation "Max wheel (mechanical) speed shall not exceed 1 km/hr (28 cm/s) (Table 2-1)."
+        structure:hasSubject RoverMobility
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance MaxWheelSpeedConstraint : values:Constraint [
+        base:name "Max Wheel Speed Limit"
+        values:expression "@MaxRoverSpeed <= 1 km/hr"
+        base:isContainedBy MaxWheelSpeedRequirement
+    ]
+
+    instance MaxSlopeRequirement : structure:Requirement [
+        base:name "Max Traverse Slope Requirement"
+        base:documentation "The actual traverse route shall not exceed 15 deg slope at rover scale (Table 2-1)."
+        structure:hasSubject RoverMobility
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance ReliabilityRequirement : structure:Requirement [
+        base:name "Autonomous Operations Reliability Requirement"
+        base:documentation "For minor faults, mean-distance-between-faults shall exceed 6 km with average recovery time under 3 hours; for major faults, MDBF shall exceed 16 km with average recovery time under 7 hours (Section 4.2, Appendix F)."
+        structure:hasSubject RoverAutonomy
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance MinorFaultConstraint : values:Constraint [
+        base:name "Minor Fault MDBF/Recovery Limit"
+        values:expression "meanDistanceBetweenFaults > 6 km & recoveryTime < 3 hr"
+        base:isContainedBy ReliabilityRequirement
+    ]
+
+    instance MajorFaultConstraint : values:Constraint [
+        base:name "Major Fault MDBF/Recovery Limit"
+        values:expression "meanDistanceBetweenFaults > 16 km & recoveryTime < 7 hr"
+        base:isContainedBy ReliabilityRequirement
+    ]
+
+    instance SampleMassRequirement : structure:Requirement [
+        base:name "Sample Collection Mass Requirement"
+        base:documentation "Endurance-R shall collect at least 200 g of sample per site (at least 20 rocklets, 0.5-2.0 cm diameter, plus regolith fines), totaling 2.4 kg across 12 sites (Section 2.3.2, Table 1-2)."
+        structure:hasSubject RoverManipulationSampling
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance MobilitySystemTest : structure:Test [
+        base:name "Mobility System Field Test"
+        base:documentation "Field tests across worst-case terrain types to validate mobility system trafficability and hazard back-out behavior."
+        structure:status "pending"
+        structure:category "Field Test"
+        structure:verifies MaxSlopeRequirement
+        base:isContainedBy EnduranceMission
+        values:mitigates TrafficabilityRisk
+    ]
+
+    instance AutonomyValidationCampaign : structure:Test [
+        base:name "Autonomy Validation Campaign"
+        base:documentation "Tens of km of autonomous full-cycle driving and science operations, on a flight-relevant prototype and validated simulation, to characterize reliability and mature integrated autonomy."
+        structure:status "pending"
+        structure:category "Field Test and Simulation"
+        structure:verifies ReliabilityRequirement
+        base:isContainedBy EnduranceMission
+        values:mitigates AutonomyReliabilityRisk
+    ]
+
+    instance RTGAvailabilityRisk : values:Risk [
+        base:name "RTG Availability Risk"
+        base:documentation "Mod-1 Next Gen RTG not available in time for launch. Mitigations: use Mod-0 Next Gen RTG or DRPS if available; adapt to MMRTG with schedule impact; adopt solar-powered option with increased mission duration; accommodate schedule slip (Table 3-11). Consequence/Likelihood values are on the report's risk-matrix scale, not the 0-1 probability range used elsewhere in this vocabulary."
+        values:probability 2
+        values:impact 3
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance LunarDustRisk : values:Risk [
+        base:name "Lunar Dust Accommodation Risk"
+        base:documentation "Accommodation of the lunar dust environment requires additional qualification and design changes to ensure reliable operation. Mitigations: seal exposed joints, raise dust-sensitive surfaces above wheel height, place body-mounted instruments >=60 cm above regolith, and test the sampling system with regolith simulants (Table 3-11)."
+        values:probability 2
+        values:impact 3
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance AutonomyReliabilityRisk : values:Risk [
+        base:name "Autonomous Operations Reliability Risk"
+        base:documentation "Reliability of autonomous operations cannot be made sufficiently high during lunar day and night to ensure execution of the mission within the allotted time. Mitigations: mature autonomy on relevant prototypes, high-fidelity simulation, extensive field-testing, and flexible mission planning (Table 3-11)."
+        values:probability 2
+        values:impact 2
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance TrafficabilityRisk : values:Risk [
+        base:name "Unexpected Trafficability Risk"
+        base:documentation "Rover encounters lunar terrain with unexpected trafficability features. Mitigations: include worst-case terrain types in mobility test plans, design multiple ways to detect mobility problems and back out of hazardous areas, and include timeline margin for alternate route planning (Table 3-11)."
+        values:probability 2
+        values:impact 2
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance ThermalPerformanceRisk : values:Risk [
+        base:name "Thermal Design Performance Risk"
+        base:documentation "Thermal design does not perform as expected. Mitigations: begin thermal design and testing early in Phase A; increase battery capacity or radiator area above design-principle margin (Table 3-11)."
+        values:probability 2
+        values:impact 2
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance PhaseA : behavior:Task [
+        base:name "Phase A - Conceptual Design"
+        behavior:duration 14
+        behavior:durationUnit "Months"
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance PhaseB : behavior:Task [
+        base:name "Phase B - Preliminary Design"
+        behavior:duration 15
+        behavior:durationUnit "Months"
+        behavior:hasPrerequisite PhaseA
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance PhaseC : behavior:Task [
+        base:name "Phase C - Detailed Design"
+        behavior:duration 22
+        behavior:durationUnit "Months"
+        behavior:hasPrerequisite PhaseB
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance PhaseD : behavior:Task [
+        base:name "Phase D - Integration & Test"
+        behavior:duration 23
+        behavior:durationUnit "Months"
+        behavior:hasPrerequisite PhaseC
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance PhaseE : behavior:Task [
+        base:name "Phase E - Primary Mission Operations"
+        behavior:duration 50
+        behavior:durationUnit "Months"
+        behavior:hasPrerequisite PhaseD
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance PhaseF : behavior:Task [
+        base:name "Phase F - Extended Mission Operations"
+        behavior:duration 6
+        behavior:durationUnit "Months"
+        behavior:hasPrerequisite PhaseE
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance AutonomyTechMaturation : behavior:Task [
+        base:name "Autonomy Technology Maturation"
+        base:documentation "Phase I (pre-Phase A feasibility assessment) and Phase II (reliability assessment) maturation of reliable integrated autonomous operations: night navigation, integrated autonomy framework, function adaptation, rover prototype, simulation, and validation campaigns (Table 4-2, Section 4.2)."
+        behavior:duration 8
+        behavior:durationUnit "Years"
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance AutonomyMaturationCost : values:Resource [
+        base:name "Autonomy Maturation ROM Cost"
+        base:documentation "Combined ROM cost of Phase I ($8.0M) and Phase II ($8.6M) autonomy technology maturation (Table 4-2)."
+        values:expression "16.6"
+        values:unit "$M (FY25)"
+        values:isConsumable true
+        base:isContainedBy AutonomyTechMaturation
+    ]
+
+    instance PointSpectrometerQualification : behavior:Task [
+        base:name "Point Spectrometer Flight Qualification"
+        base:documentation "Flight qualification of the point spectrometer instrument from TRL 4 to TRL 6 prior to PDR, via NASA PICASSO/MatISSE instrument development programs (Section 4.2)."
+        behavior:duration 3
+        behavior:durationUnit "Years"
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance LongRangeTraverseCapability : structure:Capability [
+        base:name "Long-Range Traverse Capability"
+        base:documentation "Traverse more than 1,700 km of lunar terrain in under four years, collecting samples from 12 pre-selected SPA sites (Section 1.5)."
+        base:isContainedBy EnduranceMission
+    ]
+
+    instance AutonomousNavigationCapability : structure:Capability [
+        base:name "Autonomous Surface Navigation Capability"
+        base:documentation "Onboard hazard assessment, motion planning, and hazard avoidance for autonomous surface navigation during day and night driving (Section 2.3.4)."
+        base:isContainedBy RoverAutonomy
+    ]
+
+    instance GlobalLocalizationCapability : structure:Capability [
+        base:name "Global Localization Capability"
+        base:documentation "Onboard determination of vehicle location relative to orbital maps, updated approximately every 300 m to maintain error under 10 m (Section 2.3.4)."
+        base:isContainedBy RoverAutonomy
+    ]
+
+    instance InstrumentPlacementCapability : structure:Capability [
+        base:name "Autonomous Instrument Placement Capability"
+        base:documentation "Autonomous placement of arm-mounted instruments (HLI, APXS) on selected targets via collision-free motion planning (Section 2.3.4)."
+        base:isContainedBy RoverManipulationSampling
+    ]
+
+    instance EnduranceReportRef : reference:Reference [
+        base:name "Endurance Mission Concept Study Report"
+        base:documentation "Source document for this model."
+        reference:title "Endurance: Lunar South Pole-Aitken Basin Traverse and Sample Return - Mission Concept Study Report for the 2023-2032 Planetary Science and Astrobiology Decadal Survey"
+        reference:authors "James Tuttle Keane, Sonia M. Tikoo, John Elliott, et al."
+        reference:publisher "Jet Propulsion Laboratory, California Institute of Technology"
+        reference:year "2021"
+        base:isContainedBy EnduranceMission
+    ]
+}

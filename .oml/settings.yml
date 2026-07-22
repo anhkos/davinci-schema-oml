@@ -1,0 +1,24 @@
+# oml-code settings
+oml-code:
+  schemaVersion: 1
+
+# project npm settings
+project:
+  name: "@oml/davinci-schema"
+  version: 0.1.0
+  title: Davinci Schema OML
+  description: The Davinci MBSE tool's object schema, expressed as an OML vocabulary
+
+# source folders
+sources:
+  - src
+
+# oml server settings
+server:
+  port: 8080
+
+# oml-cli parameter defaults
+defaults:
+  export: -o build/owl
+  reason: -o build/owl -t
+  render: -m src/model/md -b build/web -c src/model/oml/anhkos.github.io/example/bundle.oml

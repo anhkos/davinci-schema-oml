@@ -1,0 +1,126 @@
+@dc:title "Davinci Structure Vocabulary"
+@dc:description "Structural object types: Part, Package, Entity, Requirement, Test, Capability, Linkage. Source: https://docs.davinci-app.com/pages/modeling/objects/{parts,packages,entities,requirements,tests,capability,linkages}"
+vocabulary <http://davinci-app.com/schema/structure#> as structure {
+    extends <http://purl.org/dc/elements/1.1/> as dc
+    extends <http://www.w3.org/2001/XMLSchema#> as xsd
+    extends <http://www.w3.org/2000/01/rdf-schema#> as rdfs
+    extends <http://davinci-app.com/schema/base#> as base
+
+    @dc:description "Parts represent components or subsystems within a larger system, forming the fundamental building blocks of system structure. They can represent any kind of physical or logical component with an extent in both time and space, and own nested parts, ports, interfaces, attributes, and constraints."
+    concept Part < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable
+
+    @dc:description "Packages organize model elements into logical groups, providing namespace management and structural organization. Every project reserves two top-level packages, LIBRARY and MODEL, at the instance level (not modeled here, since that is a project convention rather than a schema constraint)."
+    concept Package < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable
+
+    @dc:description "Package sharing scope: 'private' packages are accessible only within the source project; 'public' packages are available for inclusion in other Davinci projects."
+    scalar AccessKind [
+        oneOf "private", "public"
+    ] = xsd:string
+
+    @dc:description "The sharing scope of a Package."
+    scalar property access [
+        domain Package
+        range AccessKind
+        functional
+    ]
+
+    @dc:description "A generic operational entity used to model human actors, organizations, groups, and other stakeholder elements that interact with or are part of the system. Named ExternalEntity because 'entity' is an OML keyword; rdfs:label preserves the Davinci name 'Entity'."
+    @rdfs:label "Entity"
+    concept ExternalEntity < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable
+
+    @dc:description "A condition or capability that a system must satisfy to meet stakeholder needs and objectives, formally captured through logical, evaluable statements. Status (TRUE/FALSE/INCOMPLETE) is computed by evaluating owned Constraints and sub-Requirements at runtime, so it is not modeled as an assertable property here — only the structural ownership (base:contains) and verification (Verifies) relations are represented, per the truth-rollup being an evaluation-time behavior rather than a structural fact."
+    concept Requirement < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable
+
+    @dc:description "Defines the subject of a Requirement, linking it to the parts, actions, or entities it applies to. The docs give these as examples rather than an exhaustive list, so the target is kept at base:Element."
+    relation entity HasSubject [
+        from Requirement
+        to base:Element
+        forward hasSubject
+        reverse isSubjectOf
+    ] < base:Element
+
+    @dc:description "Captures verification and validation activities that provide evidence a system meets its requirements. A Test may represent a physical or software test, analysis, inspection, demonstration, or milestone review, per a project-defined category. Verdict rollup across child Tests (All / Minimum / Weighted modes) is category-configured, evaluation-time behavior and is not modeled structurally beyond ownership."
+    concept Test < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable [
+        restricts all base:contains to Test
+    ]
+
+    @dc:description "Test status lifecycle."
+    scalar TestStatus [
+        oneOf "pending", "started", "done", "cancelled", "waived"
+    ] = xsd:string
+
+    @dc:description "The current lifecycle status of a Test."
+    scalar property status [
+        domain Test
+        range TestStatus
+        functional
+    ]
+
+    @dc:description "The resolved verdict for a leaf Test, or the rolled-up verdict for a parent Test. Verdict values are project-defined by the Test's category, so this is left as an open string rather than a closed enumeration."
+    scalar property verdict [
+        domain Test
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "The project-defined verification method (e.g. physical test, analysis, inspection, demonstration, milestone review) that determines available verdicts and rollup behavior."
+    scalar property category [
+        domain Test
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "Relative contribution of this Test to its parent's verdict in weighted rollup mode."
+    scalar property weight [
+        domain Test
+        range xsd:decimal
+        functional
+    ]
+
+    @dc:description "The observed measurement or assessment for a leaf Test (number, text, or boolean per the docs; carried as a string here since the type varies per Test)."
+    scalar property resultsValue [
+        domain Test
+        range xsd:string
+        functional
+    ]
+
+    // TODO: Test's Procedure, Results, and Prerequisites fields reference
+    // documents, code, or other model objects without a single documented
+    // relation name; Prerequisites (ordering with an offset/offset-unit) is
+    // closest to base:DependsOn and Procedure/Results are closest to
+    // base:Uses, but the docs do not name a dedicated relation for any of
+    // them, so no bespoke relation is added here to avoid inventing one.
+
+    @dc:description "Indicates that a Test provides verification evidence for a Requirement (the Test/Requirement 'verify' relationship named explicitly in the Test docs)."
+    relation entity Verifies [
+        from Test
+        to Requirement
+        forward verifies
+        reverse isVerifiedBy
+    ] < base:Element
+
+    @dc:description "Time-bounded features, skills, or capacities that a system, component, or resource possesses during a specific time period."
+    concept Capability < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable
+
+    @dc:description "When the Capability becomes available, as a date string. The docs also allow this to instead reference a Task object (with an optional useEnd flag) for dynamic scheduling; that alternative is not modeled here."
+    scalar property startDate [
+        domain Capability
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "When the Capability's availability ends, as a date string; if absent the Capability is available indefinitely after startDate. See startDate for the same Task-reference caveat."
+    scalar property endDate [
+        domain Capability
+        range xsd:string
+        functional
+    ]
+
+    // TODO: Capability start/end dates may alternatively reference a Task
+    // object (behavior.oml) with a useEnd flag. Modeling that would require
+    // structure.oml to depend on behavior.oml; left uncaptured since the docs
+    // do not make this the primary documented form.
+
+    @dc:description "Mechanical connections and kinematic relationships between physical components: joints, cables, couplings, and other physical connections. Linkages constrain relative motion between Parts or carry the physical flow of an Interface. The docs do not name a dedicated relation from Linkage to the Ports/Interfaces it carries, beyond the generic Relationships field, so none is added here."
+    concept Linkage < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable
+}

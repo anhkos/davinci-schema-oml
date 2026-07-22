@@ -1,0 +1,113 @@
+@dc:title "Davinci Reference Vocabulary"
+@dc:description "The Reference object type and its source-grounding relation to Referenceable elements. Source: https://docs.davinci-app.com/pages/modeling/objects/reference"
+vocabulary <http://davinci-app.com/schema/reference#> as reference {
+    extends <http://purl.org/dc/elements/1.1/> as dc
+    extends <http://www.w3.org/2001/XMLSchema#> as xsd
+    extends <http://davinci-app.com/schema/base#> as base
+
+    @dc:description "Uploaded source data (a document, dataset, or other file) that grounds other model objects, carrying bibliographic citation metadata."
+    concept Reference < base:Element, base:Contained, base:Taggable
+
+    @dc:description "The one or more authors of the referenced work."
+    scalar property authors [
+        domain Reference
+        range xsd:string
+    ]
+
+    @dc:description "The title of the referenced work (distinct from the base 'name' field, which identifies the Reference object itself)."
+    scalar property title [
+        domain Reference
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "The publication the referenced work appeared in."
+    scalar property publication [
+        domain Reference
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "The volume of the publication."
+    scalar property volume [
+        domain Reference
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "The issue of the publication."
+    scalar property issue [
+        domain Reference
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "The page range of the referenced work within the publication."
+    scalar property pages [
+        domain Reference
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "The publication month."
+    scalar property month [
+        domain Reference
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "The publication year."
+    scalar property year [
+        domain Reference
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "The Digital Object Identifier of the referenced work."
+    scalar property doi [
+        domain Reference
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "The URL of the referenced work."
+    scalar property url [
+        domain Reference
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "The ISBN of the referenced work."
+    scalar property isbn [
+        domain Reference
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "The publisher of the referenced work."
+    scalar property publisher [
+        domain Reference
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "The edition of the referenced work."
+    scalar property edition [
+        domain Reference
+        range xsd:string
+        functional
+    ]
+
+    @dc:description "Indicates that a Referenceable element cites a Reference, grounding it in source material (the 'Reference' base relationship type). Per the docs, when an agent generates or modifies an object from a Reference, the relationship 'describes where in the reference object it found the information' used."
+    relation entity References [
+        from base:Referenceable
+        to Reference
+        forward references
+        reverse isReferencedBy
+    ] < base:Element
+
+    // TODO: the docs describe the References relationship as carrying a
+    // locator/excerpt ("describes where in the reference object it found the
+    // information"), but do not name a specific field for it, so no such
+    // property is added here to avoid inventing one.
+}

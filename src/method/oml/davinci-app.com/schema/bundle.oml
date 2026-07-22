@@ -1,0 +1,13 @@
+@dc:title "Davinci bundle"
+@dc:description "A packaging bundle that includes all Davinci schema vocabularies."
+vocabulary bundle <http://davinci-app.com/schema/bundle#> as davinci-bundle {
+    includes <http://purl.org/dc/elements/1.1/> as dc
+    includes <http://davinci-app.com/schema/base#>
+    includes <http://davinci-app.com/schema/structure#>
+    includes <http://davinci-app.com/schema/values#>
+    includes <http://davinci-app.com/schema/artifacts#>
+    includes <http://davinci-app.com/schema/behavior#>
+    includes <http://davinci-app.com/schema/interface#>
+    includes <http://davinci-app.com/schema/analysis#>
+    includes <http://davinci-app.com/schema/reference#>
+}

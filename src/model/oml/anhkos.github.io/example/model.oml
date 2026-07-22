@@ -1,0 +1,78 @@
+@dc:title "Davinci Schema Example Model"
+@dc:description "A small example instantiating the Davinci method: a Part owning a Port and an Attribute, a Requirement with a Constraint, a Test verifying the Requirement, and a Risk mitigated by that Constraint."
+description <https://anhkos.github.io/example/model#> as model {
+    uses <http://purl.org/dc/elements/1.1/> as dc
+    uses <http://davinci-app.com/schema/base#> as base
+    uses <http://davinci-app.com/schema/structure#> as structure
+    uses <http://davinci-app.com/schema/values#> as values
+    uses <http://davinci-app.com/schema/interface#> as interface
+
+    instance ExampleModel : structure:Package [
+        base:name "Example Model"
+        base:shortname "MODEL"
+        base:documentation "Top-level package for the Davinci OML example model."
+    ]
+
+    instance RoverChassis : structure:Part [
+        base:name "Rover Chassis"
+        base:shortname "CHASSIS"
+        base:documentation "The primary structural part of the example rover."
+        base:isContainedBy ExampleModel
+    ]
+
+    instance PowerPort : interface:Port [
+        base:name "Power Port"
+        base:shortname "PWR-PORT"
+        base:documentation "Input power connection for the rover chassis."
+        interface:kind "in"
+        base:isContainedBy RoverChassis
+    ]
+
+    instance ChassisMass : values:Attribute [
+        base:name "Mass"
+        base:shortname "MASS"
+        base:documentation "The mass of the rover chassis."
+        values:expression "12.5"
+        values:unit "kg"
+        values:kind "Number"
+        base:isContainedBy RoverChassis
+    ]
+
+    instance MassRequirement : structure:Requirement [
+        base:name "Mass Requirement"
+        base:shortname "REQ-MASS"
+        base:documentation "The rover mass shall not exceed 15 kg."
+        base:isContainedBy ExampleModel
+        structure:hasSubject RoverChassis
+    ]
+
+    instance MassConstraint : values:Constraint [
+        base:name "Mass Limit"
+        base:shortname "CON-MASS"
+        base:documentation "Verifiable expression of the mass requirement."
+        values:expression "@ChassisMass < 15 kg"
+        base:isContainedBy MassRequirement
+        values:mitigates OverweightRisk
+    ]
+
+    instance MassTest : structure:Test [
+        base:name "Mass Verification Test"
+        base:shortname "TEST-MASS"
+        base:documentation "Physical weigh-in verifying the rover meets its mass requirement."
+        structure:status "done"
+        structure:verdict "pass"
+        structure:category "Physical Test"
+        base:isContainedBy ExampleModel
+        structure:verifies MassRequirement
+    ]
+
+    instance OverweightRisk : values:Risk [
+        base:name "Overweight Risk"
+        base:shortname "RISK-WEIGHT"
+        base:documentation "Risk that the assembled rover exceeds its mass budget."
+        values:probability 0.3
+        values:impact 0.7
+        values:combinator "OR"
+        base:isContainedBy ExampleModel
+    ]
+}

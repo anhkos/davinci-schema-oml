@@ -1,0 +1,7 @@
+@dc:title "Davinci Example Bundle"
+@dc:description "A bundle that includes the Davinci schema example model, for reasoning and rendering."
+description bundle <https://anhkos.github.io/example/bundle#> as example-bundle {
+    uses <http://purl.org/dc/elements/1.1/> as dc
+    uses <http://davinci-app.com/schema/bundle#>
+    includes <https://anhkos.github.io/example/model#>
+}
