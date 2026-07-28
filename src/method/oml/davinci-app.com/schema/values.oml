@@ -1,5 +1,5 @@
 @dc:title "Davinci Values Vocabulary"
-@dc:description "Value-bearing object types: Attribute, Constraint, Resource, Risk. Source: https://docs.davinci-app.com/pages/modeling/objects/{attributes,constraints,resource,risk} and https://docs.davinci-app.com/pages/modeling/common/{equations,units}"
+@dc:description "Value-bearing object types: Attribute, Constraint, Resource, Risk. Source: https://docs.davinci-app.com/pages/modeling/objects/{attributes,constraints,resource,risk} and https://docs.davinci-app.com/pages/modeling/common/{equations,units,relationships}"
 vocabulary <http://davinci-app.com/schema/values#> as values {
     extends <http://purl.org/dc/elements/1.1/> as dc
     extends <http://www.w3.org/2001/XMLSchema#> as xsd
@@ -57,6 +57,14 @@ vocabulary <http://davinci-app.com/schema/values#> as values {
 
     @dc:description "A mathematical or logical expression specifying a rule the system must adhere to (performance threshold, safety limit, physical law, or design boundary), evaluable as true or false. Commonly used within Requirements to define testable verification conditions."
     concept Constraint < base:Element, base:Contained, base:Taggable, base:Referenceable, Expressible
+
+    @dc:description "Indicates that a Constraint validates another element (the 'Validation' base relationship type, which per the docs runs 'out from the constraint... in to the target')."
+    relation entity Validates [
+        from Constraint
+        to base:Element
+        forward validates
+        reverse isValidatedBy
+    ] < base:Element
 
     @dc:description "A quantifiable attribute used to perform tasks or achieve system objectives (financial, material, equipment, personnel, or energy). Functions like an Attribute but its owned child Resources roll up automatically; the rollup arithmetic itself is evaluation-time behavior and is not modeled as a rule, only the ownership structure (base:contains) is represented."
     concept Resource < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable, Valued

@@ -1,5 +1,5 @@
 @dc:title "Davinci Base Vocabulary"
-@dc:description "Shared aspects, base fields, and cross-cutting relationships common to every Davinci object type. Source: https://docs.davinci-app.com/pages/modeling/objects/objects and https://docs.davinci-app.com/pages/modeling/common/relationships"
+@dc:description "Shared aspects, base fields, and cross-cutting relationships common to every Davinci object type. Source: https://docs.davinci-app.com/pages/modeling/objects/objects, https://docs.davinci-app.com/pages/modeling/common/relationships, and https://docs.davinci-app.com/pages/modeling/common/inheritance"
 vocabulary <http://davinci-app.com/schema/base#> as base {
     extends <http://purl.org/dc/elements/1.1/> as dc
     extends <http://www.w3.org/2001/XMLSchema#> as xsd
@@ -58,6 +58,15 @@ vocabulary <http://davinci-app.com/schema/base#> as base {
         to Tag
         reverse tags
     ]
+
+    @dc:description "Indicates that this element is a specialization of a base element of the same type: it inherits the base's fields and supported model structure with ongoing synchronization (per common/inheritance.md, a specialization has exactly one base). Field-level state (inherited / overridden / extended) and structural sync of added or removed children are instance-level editor behavior, not modeled here beyond this structural link. See artifacts:Figure for an object type that does not support this relation."
+    relation entity Specializes [
+        from Element
+        to Element
+        forward specializes
+        reverse isSpecializedBy
+        functional
+    ] < Element
 
     // ===== Base relationship types (common/relationships.md) =====
     // These are generic, element-to-element links available on every object's
@@ -123,11 +132,9 @@ vocabulary <http://davinci-app.com/schema/base#> as base {
         reverse isResultOf
     ] < Element
 
-    @dc:description "Indicates that the element is validated by another element. For the specific Test-verifies-Requirement relationship, see structure:Verifies."
-    relation entity Validates [
-        from Element
-        to Element
-        forward validates
-        reverse isValidatedBy
-    ] < Element
+    // The "Validation" base relationship type is sourced specifically from a
+    // Constraint (per common/relationships.md: "out from the constraint...
+    // in to the target"), so it is modeled as values:Validates alongside
+    // Constraint rather than generically here. For the specific
+    // Test-verifies-Requirement relationship, see structure:Verifies.
 }

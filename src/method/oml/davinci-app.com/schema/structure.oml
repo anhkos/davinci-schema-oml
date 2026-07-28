@@ -6,10 +6,10 @@ vocabulary <http://davinci-app.com/schema/structure#> as structure {
     extends <http://www.w3.org/2000/01/rdf-schema#> as rdfs
     extends <http://davinci-app.com/schema/base#> as base
 
-    @dc:description "Parts represent components or subsystems within a larger system, forming the fundamental building blocks of system structure. They can represent any kind of physical or logical component with an extent in both time and space, and own nested parts, ports, interfaces, attributes, and constraints."
+    @dc:description "Represents a physical or logical component in the model. It can have associated attributes and constraints."
     concept Part < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable
 
-    @dc:description "Packages organize model elements into logical groups, providing namespace management and structural organization. Every project reserves two top-level packages, LIBRARY and MODEL, at the instance level (not modeled here, since that is a project convention rather than a schema constraint)."
+    @dc:description "Organizes objects together in a folder structure."
     concept Package < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable
 
     @dc:description "Package sharing scope: 'private' packages are accessible only within the source project; 'public' packages are available for inclusion in other Davinci projects."
