@@ -68,22 +68,6 @@ vocabulary <http://davinci-app.com/schema/base#> as base {
         functional
     ] < Element
 
-    // ===== Base relationship types (common/relationships.md) =====
-    // These are generic, element-to-element links available on every object's
-    // "Relationships" field. The docs describe each in generic "one element to
-    // another" terms without restricting source/target types, so from/to are
-    // kept at Element here. Relationship types with a more specific documented
-    // source or target (Reference, Connect, Performs, Subject, Mitigation,
-    // Resource, Verifies) are instead modeled in the vocabulary file where the
-    // more specific concept is defined; see structure.oml, values.oml,
-    // behavior.oml, and interface.oml.
-    //
-    // TODO: the "Transition" base relationship type overlaps in name with the
-    // full Transition object type (behavior.oml, which has Kind/Conditional/
-    // Probability fields). The docs do not clarify how the two relate, so only
-    // the richer Transition object type is modeled; the generic relationship
-    // type is not separately represented.
-
     @dc:description "Indicates that one element makes use of another within the model."
     relation entity Uses [
         from Element
@@ -132,9 +116,4 @@ vocabulary <http://davinci-app.com/schema/base#> as base {
         reverse isResultOf
     ] < Element
 
-    // The "Validation" base relationship type is sourced specifically from a
-    // Constraint (per common/relationships.md: "out from the constraint...
-    // in to the target"), so it is modeled as values:Validates alongside
-    // Constraint rather than generically here. For the specific
-    // Test-verifies-Requirement relationship, see structure:Verifies.
 }

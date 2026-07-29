@@ -4,6 +4,7 @@ vocabulary <http://davinci-app.com/schema/interface#> as interface {
     extends <http://purl.org/dc/elements/1.1/> as dc
     extends <http://www.w3.org/2001/XMLSchema#> as xsd
     extends <http://davinci-app.com/schema/base#> as base
+    extends <http://davinci-app.com/schema/structure#> as structure
 
     @dc:description "An interaction point on a system component (Part) that defines how it interfaces with its environment or other components, encapsulating what flows in and out."
     concept Port < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable
@@ -30,12 +31,6 @@ vocabulary <http://davinci-app.com/schema/interface#> as interface {
         reverse isConnectedByInterface
     ]
 
-    // TODO: the "Standard Custom Relationships" (Data, Power, Mechanical,
-    // Optical, Chemical, Electromagnetic, Thermal, Fluid) are project-
-    // configurable presets layered on top of the generic Connect mechanism.
-    // The docs do not define fields that distinguish them from Connect, so
-    // they are not modeled as separate relation entities here.
-
     @dc:description "An individual element or unit that flows through a system (data, physical material, energy, or information), commonly used to specify what is transferred between components through Ports and Interfaces."
     concept Item < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable
 
@@ -45,4 +40,77 @@ vocabulary <http://davinci-app.com/schema/interface#> as interface {
         to Item
         reverse isTransferredBy
     ]
+
+    // Standard Custom Relationships
+    @dc:description "Indicates the exchange of data between parts (a 'Standard Custom Relationship' preset over the generic Connect mechanism)."
+    relation entity DataConnection [
+        from structure:Part
+        to structure:Part
+        forward hasDataConnectionTo
+        reverse hasDataConnectionFrom
+        symmetric
+    ] < base:Element
+
+    @dc:description "Indicates a power connection between parts (a 'Standard Custom Relationship' preset over the generic Connect mechanism)."
+    relation entity PowerConnection [
+        from structure:Part
+        to structure:Part
+        forward hasPowerConnectionTo
+        reverse hasPowerConnectionFrom
+        symmetric
+    ] < base:Element
+
+    @dc:description "Denotes a mechanical connection between parts (a 'Standard Custom Relationship' preset over the generic Connect mechanism)."
+    relation entity MechanicalConnection [
+        from structure:Part
+        to structure:Part
+        forward hasMechanicalConnectionTo
+        reverse hasMechanicalConnectionFrom
+        symmetric
+    ] < base:Element
+
+    @dc:description "Represents an optical link between parts (a 'Standard Custom Relationship' preset over the generic Connect mechanism)."
+    relation entity OpticalConnection [
+        from structure:Part
+        to structure:Part
+        forward hasOpticalConnectionTo
+        reverse hasOpticalConnectionFrom
+        symmetric
+    ] < base:Element
+
+    @dc:description "Describes a chemical interaction between parts (a 'Standard Custom Relationship' preset over the generic Connect mechanism)."
+    relation entity ChemicalConnection [
+        from structure:Part
+        to structure:Part
+        forward hasChemicalConnectionTo
+        reverse hasChemicalConnectionFrom
+        symmetric
+    ] < base:Element
+
+    @dc:description "Represents an electromagnetic relationship between parts (a 'Standard Custom Relationship' preset over the generic Connect mechanism)."
+    relation entity ElectromagneticConnection [
+        from structure:Part
+        to structure:Part
+        forward hasElectromagneticConnectionTo
+        reverse hasElectromagneticConnectionFrom
+        symmetric
+    ] < base:Element
+
+    @dc:description "Indicates a thermal exchange between parts (a 'Standard Custom Relationship' preset over the generic Connect mechanism)."
+    relation entity ThermalConnection [
+        from structure:Part
+        to structure:Part
+        forward hasThermalConnectionTo
+        reverse hasThermalConnectionFrom
+        symmetric
+    ] < base:Element
+
+    @dc:description "Indicates a fluid connection between parts (a 'Standard Custom Relationship' preset over the generic Connect mechanism)."
+    relation entity FluidConnection [
+        from structure:Part
+        to structure:Part
+        forward hasFluidConnectionTo
+        reverse hasFluidConnectionFrom
+        symmetric
+    ] < base:Element
 }

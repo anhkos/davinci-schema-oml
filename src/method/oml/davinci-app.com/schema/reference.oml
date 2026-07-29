@@ -106,8 +106,4 @@ vocabulary <http://davinci-app.com/schema/reference#> as reference {
         reverse isReferencedBy
     ] < base:Element
 
-    // TODO: the docs describe the References relationship as carrying a
-    // locator/excerpt ("describes where in the reference object it found the
-    // information"), but do not name a specific field for it, so no such
-    // property is added here to avoid inventing one.
 }

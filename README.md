@@ -18,7 +18,8 @@ src/method/oml/davinci-app.com/schema/   the Davinci method (vocabularies)
   values.oml        Attribute, Constraint, Resource, Risk
   artifacts.oml      Document, Table, Matrix, Figure, Slide
   behavior.oml       Action, State, Transition, Task
-  interface.oml       Port, Interface, Item
+  interface.oml       Port, Interface, Item; Data/Power/Mechanical/Optical/
+                    Chemical/Electromagnetic/Thermal/Fluid connections (Part-to-Part)
   analysis.oml       Code, Toolbox
   reference.oml      Reference
   bundle.oml         vocabulary bundle including all of the above
@@ -42,7 +43,6 @@ annotation so the two stay in sync.
 - **Attribute array dimensionality** (scalar vs. 1D/2D/3D arrays for Number/Boolean attributes) — not modeled; `expression` is a single string.
 - **Attribute state-scoped values** (`[attribute-uuid].state([state-uuid])` syntax) — an expression-language feature, not a structural relation.
 - **Interface Topology** (ordered connection groups of ports) — only the flat `connectsPort` membership is modeled, not the grouping/ordering.
-- **"Standard Custom Relationships"** (Data, Power, Mechanical, Optical, Chemical, Electromagnetic, Thermal, Fluid) — the docs describe these as project-configurable presets layered on the generic Connect mechanism, with no distinguishing fields given, so they are not modeled as separate relation entities.
 - **The "Transition" base relationship type** (common/relationships.md) — overlaps in name with the full `Transition` object type (behavior.oml). The docs don't clarify the relationship between the two, so only the richer object type is modeled.
 - **Reference relationship locator** — the docs say a `References` link "describes where in the reference object it found the information" but name no specific field for it, so no locator property is added.
 - **Capability start/end date as a Task reference with `useEnd` flag** — only the plain date-string form is modeled, to avoid a structure.oml → behavior.oml dependency for a secondary form.

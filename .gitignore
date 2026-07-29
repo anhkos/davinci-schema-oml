@@ -4,3 +4,4 @@ build
 node_modules
 .claude/settings.local.json
 docs/
+model/

@@ -49,12 +49,6 @@ vocabulary <http://davinci-app.com/schema/values#> as values {
         reverse isReferencedByAttribute
     ] < base:Element
 
-    // TODO: Attributes may define explicit values for specific States or
-    // Actions within their host's state branches (equations.md's
-    // '[attribute-uuid].state([state-uuid])' syntax). This is an expression-
-    // syntax feature evaluated inside the expression string, not a separate
-    // structural relation, so it is not modeled here.
-
     @dc:description "A mathematical or logical expression specifying a rule the system must adhere to (performance threshold, safety limit, physical law, or design boundary), evaluable as true or false. Commonly used within Requirements to define testable verification conditions."
     concept Constraint < base:Element, base:Contained, base:Taggable, base:Referenceable, Expressible
 

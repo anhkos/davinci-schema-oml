@@ -84,13 +84,6 @@ vocabulary <http://davinci-app.com/schema/structure#> as structure {
         functional
     ]
 
-    // TODO: Test's Procedure, Results, and Prerequisites fields reference
-    // documents, code, or other model objects without a single documented
-    // relation name; Prerequisites (ordering with an offset/offset-unit) is
-    // closest to base:DependsOn and Procedure/Results are closest to
-    // base:Uses, but the docs do not name a dedicated relation for any of
-    // them, so no bespoke relation is added here to avoid inventing one.
-
     @dc:description "Indicates that a Test provides verification evidence for a Requirement (the Test/Requirement 'verify' relationship named explicitly in the Test docs)."
     relation entity Verifies [
         from Test
@@ -115,11 +108,6 @@ vocabulary <http://davinci-app.com/schema/structure#> as structure {
         range xsd:string
         functional
     ]
-
-    // TODO: Capability start/end dates may alternatively reference a Task
-    // object (behavior.oml) with a useEnd flag. Modeling that would require
-    // structure.oml to depend on behavior.oml; left uncaptured since the docs
-    // do not make this the primary documented form.
 
     @dc:description "Mechanical connections and kinematic relationships between physical components: joints, cables, couplings, and other physical connections. Linkages constrain relative motion between Parts or carry the physical flow of an Interface. The docs do not name a dedicated relation from Linkage to the Ports/Interfaces it carries, beyond the generic Relationships field, so none is added here."
     concept Linkage < base:Element, base:Container, base:Contained, base:Taggable, base:Referenceable
